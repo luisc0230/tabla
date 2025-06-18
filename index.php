@@ -306,11 +306,12 @@ try {
             <?php else: ?>
               <?php foreach ($consumos as $fila): ?>
                 <tr class="hover:bg-gray-50 transition-colors">
-                  <?php foreach ($fila as $val): ?>
-                    <td class="px-2 py-1 text-xs whitespace-nowrap">
-                      <?= htmlspecialchars($val ?? '') ?>
-                    </td>
-                  <?php endforeach; ?>
+<?php foreach ($fila as $val): ?>
+  <td class="px-2 py-1 text-xs whitespace-nowrap">
+    <?= htmlspecialchars((string)($val ?? ''), ENT_QUOTES, 'UTF-8') ?>
+  </td>
+<?php endforeach; ?>
+
                   <td class="px-2 py-1 text-center">
                     <button class="viewBtn text-blue-600"
                             data-json='<?= json_encode($fila) ?>'>🔍</button>
