@@ -1,14 +1,23 @@
 <?php
 declare(strict_types=1);
 // index.php — CRUD de Consumos + Dashboard Mensual
-// 1. Conexión a MySQL
-$host = getenv('MYSQL_HOST');
-$user = getenv('MYSQL_USER');
-$pass = getenv('MYSQL_PASSWORD');
-$db   = getenv('MYSQL_DATABASE');
-$dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+$mysqlUrl = getenv('MYSQL_URL');
+if (!$mysqlUrl) {
+    die("🚨 Debes definir la variable de entorno MYSQL_URL");
+}
+
+// 2) Parseamos la URL
+$parts = parse_url($mysqlUrl);
+$host = $parts['host'] ?? '';
+$port = $parts['port'] ?? 3306;
+$user = $parts['user'] ?? '';
+$pass = $parts['pass'] ?? '';
+$db   = isset($parts['path']) ? ltrim($parts['path'], '/') : '';
+
+// 3) Conectamos con PDO
+$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
 $pdo = new PDO($dsn, $user, $pass, [
-  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 ]);
 
 // 2. Eliminar
