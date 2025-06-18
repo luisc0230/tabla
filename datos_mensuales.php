@@ -2,18 +2,29 @@
 declare(strict_types=1);
 // datos_mensuales.php — devuelve JSON con todos los campos en español
 
-// Configuración de la base de datos
-$host = '127.0.0.1';
-$db   = 'combustible';
-$user = 'root';
-$pass = '';
-$dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+// 1) URL completa de Railway (inyectada en prod y puedes exportarla localmente)
+$mysqlUrl = getenv('MYSQL_URL');
+if (!$mysqlUrl) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Debe definir la variable de entorno MYSQL_URL']);
+    exit;
+}
 
+// 2) Parseamos la URL para extraer host, puerto, user, pass y base
+$parts = parse_url($mysqlUrl);
+$host = $parts['host']   ?? '';
+$port = $parts['port']   ?? 3306;
+$user = $parts['user']   ?? '';
+$pass = $parts['pass']   ?? '';
+$db   = isset($parts['path']) ? ltrim($parts['path'], '/') : '';
+
+// 3) Conexión PDO
+$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
 try {
     $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false
+        PDO::ATTR_EMULATE_PREPARES   => false,
     ]);
 } catch (PDOException $e) {
     http_response_code(500);
