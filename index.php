@@ -2,18 +2,15 @@
 declare(strict_types=1);
 // index.php — CRUD de Consumos + Dashboard Mensual
 // 1. Conexión a MySQL
-$host = '127.0.0.1';
-$db   = 'combustible';
-$user = 'root';
-$pass = '';
+$host = getenv('MYSQL_HOST');
+$user = getenv('MYSQL_USER');
+$pass = getenv('MYSQL_PASSWORD');
+$db   = getenv('MYSQL_DATABASE');
 $dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
-}
+$pdo = new PDO($dsn, $user, $pass, [
+  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+]);
+
 // 2. Eliminar
 if (isset($_GET['delete_id'])) {
     $pdo->prepare("DELETE FROM consumos WHERE id = ?")
